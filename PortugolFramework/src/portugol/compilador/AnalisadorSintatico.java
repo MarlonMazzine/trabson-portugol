@@ -64,7 +64,8 @@ public class AnalisadorSintatico {
                    tratadorErro.emitirErroSintatico(tokenEsperado, token_a_frente, analisadorLexico.obterNumeroLinha());
 
                 }catch(Exception e){
-                    JOptionPane.showMessageDialog(null, e.toString());
+                    System.out.println(e.toString());
+//                    JOptionPane.showMessageDialog(null, e.toString());
                 }
             }
         } else {

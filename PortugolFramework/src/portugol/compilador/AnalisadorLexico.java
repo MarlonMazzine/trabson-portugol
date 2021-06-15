@@ -122,7 +122,7 @@ public class AnalisadorLexico {
                     
                     break;
                 case 2:
-                    lexema = String.copyValueOf(vetorCodigo, posicaoInicial, posicaoFinal - posicaoInicial);
+                    lexema = String.copyValueOf(vetorCodigo, posicaoInicial, posicaoFinal - posicaoInicial - 1);
                     
                     return tabelaSimbolos.obterToken(lexema);
                 case 3:
