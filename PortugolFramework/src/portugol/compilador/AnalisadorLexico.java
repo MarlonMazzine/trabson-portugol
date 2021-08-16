@@ -182,8 +182,7 @@ public class AnalisadorLexico {
                     lexema = Lexema.RELACAO_IGUAL;
                     return tabelaSimbolos.obterToken(lexema);
                 case 15:
-                    lexema = Lexema.FIM_COMANDO;
-                    return tabelaSimbolos.obterToken(lexema);
+                    return Token.FIM_COMANDO;
                 case 16:
                     if (vetorCodigo[posicaoFinal] == '=') {
                         estado = 17;

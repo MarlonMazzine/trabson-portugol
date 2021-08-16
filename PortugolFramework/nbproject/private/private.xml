@@ -4,7 +4,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/marlo/Documents/NetBeansProjects/maquina-transicao-estados-main/PortugolFramework/src/portugol/compilador/AnalisadorSintatico.java</file>
+            <file>file:/C:/Users/marlo/Documents/trabson-portugol/trabson-portugol/PortugolFramework/src/portugol/compilador/AnalisadorSintatico.java</file>
+            <file>file:/C:/Users/marlo/Documents/trabson-portugol/trabson-portugol/PortugolFramework/src/portugol/utilitarios/ImpressaoArvoreSintatica.java</file>
+            <file>file:/C:/Users/marlo/Documents/trabson-portugol/trabson-portugol/PortugolFramework/src/portugol/arvoresintatica/NoExpressaoAritmetica.java</file>
+            <file>file:/C:/Users/marlo/Documents/trabson-portugol/trabson-portugol/PortugolFramework/src/portugol/compilador/TabelaSimbolos.java</file>
+            <file>file:/C:/Users/marlo/Documents/trabson-portugol/trabson-portugol/PortugolFramework/src/portugol/compilador/AnalisadorLexico.java</file>
         </group>
     </open-files>
 </project-private>

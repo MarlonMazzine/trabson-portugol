@@ -54,6 +54,11 @@ public class ImpressaoArvoreSintatica {
 
     public String obterExpressao (NoExpressao simbolo){
         String operando = "";
+        
+        if (simbolo == null) {
+            return "";
+        }
+        
         switch (simbolo.obterTipo()){
             case NUMERO_INTEIRO:
                 operando = String.valueOf(((NoNumeroInteiro)simbolo).obterValor());
@@ -74,8 +79,8 @@ public class ImpressaoArvoreSintatica {
     }
 
     public String obterOperacaoAritmetica(NoExpressaoAritmetica operacaoAritmetica){
-
-        String resultado = "("+obterExpressao(operacaoAritmetica.obterOperandoEsquerdo());
+        String resultado =
+            "(" + obterExpressao(operacaoAritmetica.obterOperandoEsquerdo());
 
         switch (operacaoAritmetica.obterCodigoOperacao()){
             case ADICAO: resultado += " + "; break;
@@ -84,7 +89,7 @@ public class ImpressaoArvoreSintatica {
             case DIVISAO: resultado += " / "; break;
         }
 
-        resultado += obterExpressao(operacaoAritmetica.obterOperandoDireito())+")";
+        resultado += obterExpressao(operacaoAritmetica.obterOperandoDireito()) + ")";
         return resultado;
     }
 

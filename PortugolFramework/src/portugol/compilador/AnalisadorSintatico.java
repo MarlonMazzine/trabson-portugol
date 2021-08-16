@@ -153,7 +153,7 @@ public class AnalisadorSintatico {
             //após o fim da análise sintática de declaração.
             TipoValor tipoValorVariavel = obterTipoValorExpressao(analisadorLexico.obterLexema());
             reconhecerToken(Token.TIPO_VARIAVEL);
-            reconhecerToken(Token.FIM_COMANDO);
+//            reconhecerToken(Token.IDENTIFICADOR);
             identificador.definirTipoValor(tipoValorVariavel);
         }
     }
@@ -165,8 +165,8 @@ public class AnalisadorSintatico {
      * A presença deste token indica que terminou o bloco de declarações.
      */
     public void reconhecerBlocoDeclaracoes(){
-       while ((token_a_frente != null) && (token_a_frente == Token.IDENTIFICADOR)){
-          reconhecerDeclaracao();
+        while ((token_a_frente != null) && (token_a_frente == Token.IDENTIFICADOR)){
+            reconhecerDeclaracao();
         }
     }
 
@@ -210,6 +210,7 @@ public class AnalisadorSintatico {
                     comando = reconhecerComandoDeAteFaca();
                     break;
                 case IDENTIFICADOR:
+                case ATRIBUICAO:
                     comando = reconhecerComandoAtribuicao();
                     break;
                 default:
@@ -333,9 +334,16 @@ public class AnalisadorSintatico {
 
     public NoComandoLer reconhecerComandoLer(){
         int numeroLinhaTokenLer = analisadorLexico.obterNumeroLinha();
+        
         reconhecerToken(Token.LER);
+        
         NoIdentificador identificador = reconhecerIdentificador();
-        reconhecerToken(Token.FIM_COMANDO);
+        
+        if (token_a_frente == Token.IDENTIFICADOR) {
+            reconhecerToken(Token.IDENTIFICADOR);
+        } else {
+            reconhecerToken(Token.LER);
+        }
  
         return new NoComandoLer(identificador, numeroLinhaTokenLer);
     }
@@ -359,7 +367,6 @@ public class AnalisadorSintatico {
                 operando = reconhecerCadeiaCaracteres();
         }
 
-        reconhecerToken(Token.FIM_COMANDO);
         return new NoComandoEscrever(operando, numeroLinhaComandoEscrever);
     }
 
@@ -427,8 +434,13 @@ public class AnalisadorSintatico {
 
     private NoComandoAtribuicao reconhecerComandoAtribuicao(){
         int numeroLinhaAtribuicao = analisadorLexico.obterNumeroLinha();
-        NoIdentificador identificador = reconhecerIdentificador();
-        reconhecerToken(Token.ATRIBUICAO);
+        NoIdentificador identificador = new NoIdentificador(analisadorLexico.obterDadosIdentificador(), numeroLinhaAtribuicao);
+        
+        if (token_a_frente != Token.ATRIBUICAO) {
+            identificador = reconhecerIdentificador();
+        } else {
+            this.reconhecerToken(Token.ATRIBUICAO);
+        }
         
         NoExpressao expressao = null;
         
@@ -442,11 +454,25 @@ public class AnalisadorSintatico {
             case NUMERO_REAL:
                 expressao = reconhecerNumeroReal();
                 break;
-            default:
-                expressao = reconhecerCadeiaCaracteres();
+            case ADICAO:
+            case SUBTRACAO:
+                expressao = reconhecerExpressaoAritmetica();
+                break;
+            case ATRIBUICAO:
+                expressao = reconhecerComandoAtribuicao().obterExpressao();
+                break;
+            case ESCREVER:
+                break;
         }
         
-        reconhecerToken(Token.FIM_COMANDO);
+        if (token_a_frente == Token.FIM_COMANDO) {
+            this.reconhecerToken(Token.FIM_COMANDO);
+        } else if (token_a_frente == Token.ADICAO) {
+            this.reconhecerToken(Token.ADICAO);
+        } else  if (token_a_frente == Token.ATRIBUICAO) {
+            this.reconhecerToken(Token.ATRIBUICAO);
+        }
+        
         return new NoComandoAtribuicao(identificador, expressao, numeroLinhaAtribuicao);
     }
 }

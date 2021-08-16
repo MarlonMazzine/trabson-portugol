@@ -59,23 +59,25 @@ public class AnalisadorSemantico {
 
                 if (tipoOperandoEsquerdo == TipoValor.REAL || tipoOperandoDireito == TipoValor.REAL){
                    return TipoValor.REAL;
-               } else
+                } else {
                    return TipoValor.INTEIRO;
-
+                }
            } else {
-               tratadorErro.emitirErroExpressaoTipoTexoNaoPermitida(expressao.obterNumeroLinha());
+//               tratadorErro.emitirErroExpressaoTipoTexoNaoPermitida(expressao.obterNumeroLinha());
                 //gerar erro aqui
+                throw new Exception();
            }
         }
+        
         return TipoValor.INDEFINIDO;
     }
 
     private void verificarTipoExpressaoRelacional(NoExpressaoRelacional expressaoRelacional) throws Exception {
         TipoValor tipoExpressaoAritmeticaEsquerda = 
-                 obterTipoExpressao(expressaoRelacional.obterOperandoEsquerdo());
+            obterTipoExpressao(expressaoRelacional.obterOperandoEsquerdo());
         
         TipoValor tipoExpressaoAritmeticaDireita = 
-                obterTipoExpressao (expressaoRelacional.obterOperandoDireito());
+            obterTipoExpressao (expressaoRelacional.obterOperandoDireito());
         
         if ((tipoExpressaoAritmeticaEsquerda == TipoValor.CADEIA_CARACTERES) ||
             (tipoExpressaoAritmeticaDireita  == TipoValor.CADEIA_CARACTERES)){
@@ -103,6 +105,9 @@ public class AnalisadorSemantico {
                     break;
                 case CONDICAO:
                     verificarTipoComandoCondicao((NoComandoCondicao)operacao);
+                    break;
+                default:
+                    throw new Exception();
             }
         }
     }
@@ -119,10 +124,24 @@ public class AnalisadorSemantico {
     // Métodos para completar --------------------------------------------------
 
     private void verificarTipoComandoCondicao(NoComandoCondicao comandoCondicao) throws Exception {
-       // Completar arqui. 
-       // Usar verificarTipoExpressaoRelacional
-       // Usar verificarTipoComandos
-       // USar verificarTipoComandoCondicao 
+        // Completar aqui. 
+        // Usar verificarTipoExpressaoRelacional
+        // Usar verificarTipoComandos
+        // Usar verificarTipoComandoCondicao 
+        
+        switch(comandoCondicao.obterNome()) {
+            case CONDICAO:
+                verificarTipoComandoCondicao(comandoCondicao);
+                break;
+            default:
+                final NoExpressaoRelacional noExpressaoRelacional =
+                    comandoCondicao.obterExpressaoRelacional();
+                final NoBlocoComandos noBlocoComandos =
+                    comandoCondicao.obterBlocoComandos();
+
+                verificarTipoExpressaoRelacional(noExpressaoRelacional);
+                verificarTipoComandos(noBlocoComandos);
+        }
     }
 
     private void verificarComandoDeAte(NoComandoDeAte comandoDeAte) throws Exception {
