@@ -124,10 +124,13 @@ public class AnalisadorSemantico {
     // Métodos para completar --------------------------------------------------
 
     private void verificarTipoComandoCondicao(NoComandoCondicao comandoCondicao) throws Exception {
-        // Completar aqui. 
-        // Usar verificarTipoExpressaoRelacional
-        // Usar verificarTipoComandos
-        // Usar verificarTipoComandoCondicao 
+        NoExpressaoRelacional expressaoRelacional = comandoCondicao.obterExpressaoRelacional();
+        verificarTipoExpressaoRelacional(new NoExpressaoRelacional(expressaoRelacional.obterRelacao(),
+                expressaoRelacional.obterOperandoEsquerdo(),
+                expressaoRelacional.obterOperandoDireito(),
+                expressaoRelacional.obterNumeroLinha()));
+        verificarTipoComandos(comandoCondicao.obterBlocoComandos());
+        verificarTipoComandoCondicao(comandoCondicao);
         
         switch(comandoCondicao.obterNome()) {
             case CONDICAO:
@@ -145,20 +148,24 @@ public class AnalisadorSemantico {
     }
 
     private void verificarComandoDeAte(NoComandoDeAte comandoDeAte) throws Exception {
-       // Completar aqui
-       // Usar verificarTipoComandos.
-       // Usar tratadorErro.emitirErroLimitesComandoDeAte(comandoDeAte)
-      
+        verificarTipoComandos(comandoDeAte.obterBlocoComandos());
+        tratadorErro.emitirErroLimitesComandoDeAte(comandoDeAte);
     }
 
     private void verificarComandoEnquantoFaca(NoComandoEnquantoFaca comandoEnquantoFaca) throws Exception{
        //Completar arqui. Usar os métodos que já existem para fazer as verificações.
+        verificarComandoEnquantoFaca(comandoEnquantoFaca);
     }
 
     private void verificarComandoAtribuicao(NoComandoAtribuicao comandoAtribuicao) throws Exception {
         //Completar aqui.
         // Usar tratadorErro.emitirErroSemanticoTipoValorEsperado
+        NoExpressao noExpressao = comandoAtribuicao.obterExpressao();
+
+        verificarComandoAtribuicao(comandoAtribuicao);
+        tratadorErro.emitirErroSemanticoTipoValorEsperado(comandoAtribuicao.obterIdentificador().obterTipoValorExpressao(),
+                noExpressao.obterTipoValorExpressao(),
+                comandoAtribuicao.obterNumeroLinha());
     }
     
 }
-
