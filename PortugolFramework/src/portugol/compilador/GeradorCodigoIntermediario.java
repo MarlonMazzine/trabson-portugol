@@ -145,46 +145,80 @@ public class GeradorCodigoIntermediario {
         return operandoResultado;
     }
 
- 
-
     //Métodos para completar ---------------------------------------------------
     private void traduzirComandoLer(NoComandoLer comandoLer){
-        //Completar aqui.
-        //Usar instrucoes.add() para incluir a instrução.
+        instrucoes.add(new InstrucaoLer(comandoLer.obterIdentificador()));
     }
 
     private void traduzirComandoEscrever(NoComandoEscrever comandoEscrever){
-        //Completar aqui.
-        //Usar instrucoes.add() para incluir as instrução.
+        instrucoes.add(new InstrucaoEscrever(comandoEscrever.obterOperando()));
     }
 
     
     private void traduzirComandoCondicao(NoComandoCondicao comandoCondicao) throws Exception {
-        //Completar aqui.
-        //Usar instrucoes.add() para incluir as instruções.
+        Rotulo saidaSe = this.criarRotulo();
+        NoExpressao opRel = this.traduzirExpressaoRelacional(comandoCondicao.obterExpressaoRelacional());
+        InstrucaoSeFalso instrucaoSeFalso = new InstrucaoSeFalso(opRel, saidaSe);
+
+        instrucoes.add(instrucaoSeFalso);
+        
+        traduzirComandos(comandoCondicao.obterBlocoComandos());
+        
+        if (comandoCondicao.obterComandoSenao() == null) {
+            instrucoes.add(saidaSe);
+            
+            if (comandoCondicao.obterComandoSenao() != null) {
+                Rotulo saidaElse = this.criarRotulo();
+                InstrucaoIrPara instrucaoIrPara = new InstrucaoIrPara(saidaElse);
+                
+                instrucoes.add(instrucaoIrPara);
+                instrucoes.add(saidaElse);
+                
+                if (comandoCondicao.obterExpressaoRelacional() == null) {
+                    traduzirComandos(comandoCondicao.obterBlocoComandos());
+                } else {
+                    traduzirComandoCondicao(comandoCondicao);
+                }
+                
+                instrucoes.add(saidaElse);
+            }
+        }
     }
 
     private void traduzirComandoEnquantoFaca(NoComandoEnquantoFaca comandoEnquantoFaca) throws Exception{
-       
-        //Completar aqui.
-        //Usar instrucoes.add() para incluir as instruções.
-
+        Rotulo retorno = this.criarRotulo();
+        Rotulo saida = this.criarRotulo();
+        
+        instrucoes.add(retorno);
+        
+        NoExpressao noExpressao = this.traduzirExpressaoRelacional(comandoEnquantoFaca.obterExpressaoRelacional());
+        InstrucaoSeFalso instrucaoSeFalso = new InstrucaoSeFalso(noExpressao, saida);
+        
+        instrucoes.add(instrucaoSeFalso);
+        this.traduzirComandos(comandoEnquantoFaca.obterListaComandos());
+        
+        InstrucaoIrPara instrucaoIrPara = new InstrucaoIrPara(retorno);
+        
+        instrucoes.add(instrucaoIrPara);
+        instrucoes.add(saida);
     }
 
     private void traduzirComandoDeAte(NoComandoDeAte comandoDeAte) throws Exception {
-       
-        //Completar aqui.
-        //Usar instrucoes.add() para incluir as instruções.
-
+        int valorIncremento = 1;
+        NoIdentificador tempInc = this.criarVariavelTemporaria();
+        NoIdentificador tempRel = this.criarVariavelTemporaria();
+        Rotulo retorno = this.criarRotulo();
+        Rotulo saida = this.criarRotulo();
+        InstrucaoAtribuir instrucaoAtribuir = new InstrucaoAtribuir(comandoDeAte.obterLimiteInicial(), comandoDeAte.obterIdentificador());
+        
+        instrucoes.add(instrucaoAtribuir);
+        instrucoes.add(retorno);
+        
+        InstrucaoRelacional instrucaoRelacional = new InstrucaoRelacional(TipoRelacao.MENOR_IGUAL, tempRel, comandoDeAte.obterIdentificador(), comandoDeAte.obterLimiteFinal());
+        instrucoes.add(instrucaoRelacional);
     }
-
 
     private void traduzirComandoAtribuicao(NoComandoAtribuicao comandoAtribuicao) throws Exception {
-        //Completar aqui.
-        //Usar instrucoes.add() para incluir as instruções.
-
+        instrucoes.add(new InstrucaoAtribuir(comandoAtribuicao.obterExpressao(), comandoAtribuicao.obterIdentificador()));
     }
-
-    
-
 }
