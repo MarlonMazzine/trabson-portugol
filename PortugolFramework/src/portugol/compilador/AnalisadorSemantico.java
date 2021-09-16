@@ -59,25 +59,23 @@ public class AnalisadorSemantico {
 
                 if (tipoOperandoEsquerdo == TipoValor.REAL || tipoOperandoDireito == TipoValor.REAL){
                    return TipoValor.REAL;
-                } else {
+               } else
                    return TipoValor.INTEIRO;
-                }
+
            } else {
-//               tratadorErro.emitirErroExpressaoTipoTexoNaoPermitida(expressao.obterNumeroLinha());
+               tratadorErro.emitirErroExpressaoTipoTexoNaoPermitida(expressao.obterNumeroLinha());
                 //gerar erro aqui
-                throw new Exception();
            }
         }
-        
         return TipoValor.INDEFINIDO;
     }
 
     private void verificarTipoExpressaoRelacional(NoExpressaoRelacional expressaoRelacional) throws Exception {
         TipoValor tipoExpressaoAritmeticaEsquerda = 
-            obterTipoExpressao(expressaoRelacional.obterOperandoEsquerdo());
+                 obterTipoExpressao(expressaoRelacional.obterOperandoEsquerdo());
         
         TipoValor tipoExpressaoAritmeticaDireita = 
-            obterTipoExpressao (expressaoRelacional.obterOperandoDireito());
+                obterTipoExpressao (expressaoRelacional.obterOperandoDireito());
         
         if ((tipoExpressaoAritmeticaEsquerda == TipoValor.CADEIA_CARACTERES) ||
             (tipoExpressaoAritmeticaDireita  == TipoValor.CADEIA_CARACTERES)){
@@ -85,6 +83,60 @@ public class AnalisadorSemantico {
         }
     }
 
+    private void verificarTipoComandoCondicao(NoComandoCondicao comandoCondicao) throws Exception {
+       verificarTipoExpressaoRelacional(comandoCondicao.obterExpressaoRelacional());
+       verificarTipoComandos(comandoCondicao.obterBlocoComandos());
+       if (comandoCondicao.obterComandoSenao() != null){
+            if (comandoCondicao.obterComandoSenao().obterNome() == NomeComando.CONDICAO){
+                verificarTipoComandoCondicao((NoComandoCondicao)comandoCondicao.obterComandoSenao());
+            } else {
+                verificarTipoComandos((NoBlocoComandos)comandoCondicao.obterComandoSenao());
+            }
+       }
+    }
+
+    private void verificarComandoDeAte(NoComandoDeAte comandoDeAte) throws Exception {
+       int valorInicial = comandoDeAte.obterLimiteInicial().obterValor();
+       int valorFinal = comandoDeAte.obterLimiteFinal().obterValor();
+       if (valorFinal < valorInicial){
+            tratadorErro.emitirErroLimitesComandoDeAte(comandoDeAte);
+       } else {
+           verificarTipoComandos(comandoDeAte.obterBlocoComandos());
+       }
+       
+    }
+
+    private void verificarComandoEnquantoFaca(NoComandoEnquantoFaca comandoEnquantoFaca) throws Exception{
+       verificarTipoExpressaoRelacional(comandoEnquantoFaca.obterExpressaoRelacional());
+       verificarTipoComandos(comandoEnquantoFaca.obterListaComandos());
+    }
+
+    private void verificarComandoAtribuicao(NoComandoAtribuicao comandoAtribuicao) throws Exception {
+        TipoValor tipoIdentificador = 
+                comandoAtribuicao.obterIdentificador().obterTipoValorExpressao();
+        
+        TipoValor tipoExpressao = 
+                obterTipoExpressao(comandoAtribuicao.obterExpressao());
+        
+        if (tipoIdentificador != tipoExpressao) {
+            /* A única diferença permitida é o identificador ser real e
+             * a expressão gerar um resultado inteiro.
+             */
+            if (tipoIdentificador == TipoValor.REAL) {
+               
+                if (tipoExpressao != TipoValor.INTEIRO) {
+                   tratadorErro.emitirErroSemanticoTipoValorEsperado(tipoIdentificador,
+                                                                     tipoExpressao,
+                                                                     comandoAtribuicao.obterNumeroLinha());
+               }
+
+           } else {
+                   tratadorErro.emitirErroSemanticoTipoValorEsperado(tipoIdentificador,
+                                                                     tipoExpressao,
+                                                                     comandoAtribuicao.obterNumeroLinha());
+           }
+        }
+    }
 
     public void verificarTipoComandos(NoBlocoComandos listaComandos) throws Exception {
         Iterator it = listaComandos.obterOperacoes().iterator();
@@ -105,9 +157,6 @@ public class AnalisadorSemantico {
                     break;
                 case CONDICAO:
                     verificarTipoComandoCondicao((NoComandoCondicao)operacao);
-                    break;
-                default:
-                    throw new Exception();
             }
         }
     }
@@ -120,52 +169,5 @@ public class AnalisadorSemantico {
             JOptionPane.showMessageDialog(null, e.toString());
         }
     }
-    
-    // Métodos para completar --------------------------------------------------
-
-    private void verificarTipoComandoCondicao(NoComandoCondicao comandoCondicao) throws Exception {
-        NoExpressaoRelacional expressaoRelacional = comandoCondicao.obterExpressaoRelacional();
-        verificarTipoExpressaoRelacional(new NoExpressaoRelacional(expressaoRelacional.obterRelacao(),
-                expressaoRelacional.obterOperandoEsquerdo(),
-                expressaoRelacional.obterOperandoDireito(),
-                expressaoRelacional.obterNumeroLinha()));
-        verificarTipoComandos(comandoCondicao.obterBlocoComandos());
-        verificarTipoComandoCondicao(comandoCondicao);
-        
-        switch(comandoCondicao.obterNome()) {
-            case CONDICAO:
-                verificarTipoComandoCondicao(comandoCondicao);
-                break;
-            default:
-                final NoExpressaoRelacional noExpressaoRelacional =
-                    comandoCondicao.obterExpressaoRelacional();
-                final NoBlocoComandos noBlocoComandos =
-                    comandoCondicao.obterBlocoComandos();
-
-                verificarTipoExpressaoRelacional(noExpressaoRelacional);
-                verificarTipoComandos(noBlocoComandos);
-        }
-    }
-
-    private void verificarComandoDeAte(NoComandoDeAte comandoDeAte) throws Exception {
-        verificarTipoComandos(comandoDeAte.obterBlocoComandos());
-        tratadorErro.emitirErroLimitesComandoDeAte(comandoDeAte);
-    }
-
-    private void verificarComandoEnquantoFaca(NoComandoEnquantoFaca comandoEnquantoFaca) throws Exception{
-       //Completar arqui. Usar os métodos que já existem para fazer as verificações.
-        verificarComandoEnquantoFaca(comandoEnquantoFaca);
-    }
-
-    private void verificarComandoAtribuicao(NoComandoAtribuicao comandoAtribuicao) throws Exception {
-        //Completar aqui.
-        // Usar tratadorErro.emitirErroSemanticoTipoValorEsperado
-        NoExpressao noExpressao = comandoAtribuicao.obterExpressao();
-
-        verificarComandoAtribuicao(comandoAtribuicao);
-        tratadorErro.emitirErroSemanticoTipoValorEsperado(comandoAtribuicao.obterIdentificador().obterTipoValorExpressao(),
-                noExpressao.obterTipoValorExpressao(),
-                comandoAtribuicao.obterNumeroLinha());
-    }
-    
 }
+
