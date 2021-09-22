@@ -181,26 +181,6 @@ public class GeradorCodigoIntermediario {
                 instrucoes.add(saidaSeNao);
             }
         }
-        
-//        if (comandoCondicao.obterComandoSenao() == null) {
-//            instrucoes.add(saidaSe);
-//
-//            if (comandoCondicao.obterComandoSenao() != null) {
-//                Rotulo saidaElse = this.criarRotulo();
-//                InstrucaoIrPara instrucaoIrPara = new InstrucaoIrPara(saidaElse);
-//
-//                instrucoes.add(instrucaoIrPara);
-//                instrucoes.add(saidaElse);
-//
-//                if (comandoCondicao.obterExpressaoRelacional() == null) {
-//                    traduzirComandos(comandoCondicao.obterBlocoComandos());
-//                } else {
-//                    traduzirComandoCondicao(comandoCondicao);
-//                }
-//
-//                instrucoes.add(saidaElse);
-//            }
-//        }
     }
 
     private void traduzirComandoEnquantoFaca(NoComandoEnquantoFaca comandoEnquantoFaca) throws Exception{
@@ -222,8 +202,7 @@ public class GeradorCodigoIntermediario {
     }
 
     private void traduzirComandoDeAte(NoComandoDeAte comandoDeAte) throws Exception {
-        int valorIncremento = 1;
-        NoIdentificador tempInc = this.criarVariavelTemporaria();
+        NoExpressao incremento = new NoNumeroInteiro(1, 0);
         NoIdentificador tempRel = this.criarVariavelTemporaria();
         Rotulo retorno = this.criarRotulo();
         Rotulo saida = this.criarRotulo();
@@ -234,6 +213,14 @@ public class GeradorCodigoIntermediario {
         
         InstrucaoRelacional instrucaoRelacional = new InstrucaoRelacional(TipoRelacao.MENOR_IGUAL, tempRel, comandoDeAte.obterIdentificador(), comandoDeAte.obterLimiteFinal());
         instrucoes.add(instrucaoRelacional);
+        instrucoes.add(new InstrucaoSeFalso(tempRel, saida));
+
+        this.traduzirComandos(comandoDeAte.obterBlocoComandos());
+
+        InstrucaoAritmetica instrucaoAritmetica = new InstrucaoAritmetica(TipoOperacaoAritmetica.ADICAO, comandoDeAte.obterIdentificador(), comandoDeAte.obterIdentificador(), incremento);
+        instrucoes.add(instrucaoAritmetica);
+        instrucoes.add(new InstrucaoIrPara(retorno));
+        instrucoes.add(saida);
     }
 
     private void traduzirComandoAtribuicao(NoComandoAtribuicao comandoAtribuicao) throws Exception {
