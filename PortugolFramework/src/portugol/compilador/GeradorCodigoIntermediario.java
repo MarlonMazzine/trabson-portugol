@@ -163,26 +163,44 @@ public class GeradorCodigoIntermediario {
         instrucoes.add(instrucaoSeFalso);
         
         traduzirComandos(comandoCondicao.obterBlocoComandos());
-        
-        if (comandoCondicao.obterComandoSenao() == null) {
+
+        if(comandoCondicao.obterComandoSenao() != null) {
             instrucoes.add(saidaSe);
-            
-            if (comandoCondicao.obterComandoSenao() != null) {
-                Rotulo saidaElse = this.criarRotulo();
-                InstrucaoIrPara instrucaoIrPara = new InstrucaoIrPara(saidaElse);
-                
-                instrucoes.add(instrucaoIrPara);
-                instrucoes.add(saidaElse);
-                
-                if (comandoCondicao.obterExpressaoRelacional() == null) {
-                    traduzirComandos(comandoCondicao.obterBlocoComandos());
-                } else {
-                    traduzirComandoCondicao(comandoCondicao);
-                }
-                
-                instrucoes.add(saidaElse);
+
+            NoComando senao = comandoCondicao.obterComandoSenao();
+
+            if(senao instanceof NoBlocoComandos) {
+                traduzirComandos((NoBlocoComandos) senao);
+            } else {
+                Rotulo saidaSeNao = this.criarRotulo();
+                NoComandoCondicao senaoComandoCondicao = (NoComandoCondicao) senao;
+                NoExpressao opRelSeNao = this.traduzirExpressaoRelacional(senaoComandoCondicao.obterExpressaoRelacional());
+                InstrucaoSeFalso instrucaoSeFalsoSeNao = new InstrucaoSeFalso(opRelSeNao, saidaSeNao);
+                instrucoes.add(instrucaoSeFalsoSeNao);
+                traduzirComandos((senaoComandoCondicao).obterBlocoComandos());
+                instrucoes.add(saidaSeNao);
             }
         }
+        
+//        if (comandoCondicao.obterComandoSenao() == null) {
+//            instrucoes.add(saidaSe);
+//
+//            if (comandoCondicao.obterComandoSenao() != null) {
+//                Rotulo saidaElse = this.criarRotulo();
+//                InstrucaoIrPara instrucaoIrPara = new InstrucaoIrPara(saidaElse);
+//
+//                instrucoes.add(instrucaoIrPara);
+//                instrucoes.add(saidaElse);
+//
+//                if (comandoCondicao.obterExpressaoRelacional() == null) {
+//                    traduzirComandos(comandoCondicao.obterBlocoComandos());
+//                } else {
+//                    traduzirComandoCondicao(comandoCondicao);
+//                }
+//
+//                instrucoes.add(saidaElse);
+//            }
+//        }
     }
 
     private void traduzirComandoEnquantoFaca(NoComandoEnquantoFaca comandoEnquantoFaca) throws Exception{
@@ -209,8 +227,8 @@ public class GeradorCodigoIntermediario {
         NoIdentificador tempRel = this.criarVariavelTemporaria();
         Rotulo retorno = this.criarRotulo();
         Rotulo saida = this.criarRotulo();
+
         InstrucaoAtribuir instrucaoAtribuir = new InstrucaoAtribuir(comandoDeAte.obterLimiteInicial(), comandoDeAte.obterIdentificador());
-        
         instrucoes.add(instrucaoAtribuir);
         instrucoes.add(retorno);
         
