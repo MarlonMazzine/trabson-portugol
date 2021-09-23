@@ -8,11 +8,8 @@ package portugol.utilitarios;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.DefaultListModel;
-import portugol.arvoresintatica.NoCadeiaCaracteres;
-import portugol.arvoresintatica.NoExpressao;
-import portugol.arvoresintatica.NoIdentificador;
-import portugol.arvoresintatica.NoNumeroInteiro;
-import portugol.arvoresintatica.NoNumeroReal;
+
+import portugol.arvoresintatica.*;
 import portugol.intermediario.Instrucao;
 import portugol.intermediario.InstrucaoAritmetica;
 import portugol.intermediario.InstrucaoEscrever;

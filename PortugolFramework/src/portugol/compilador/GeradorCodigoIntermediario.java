@@ -224,6 +224,11 @@ public class GeradorCodigoIntermediario {
     }
 
     private void traduzirComandoAtribuicao(NoComandoAtribuicao comandoAtribuicao) throws Exception {
-        instrucoes.add(new InstrucaoAtribuir(comandoAtribuicao.obterExpressao(), comandoAtribuicao.obterIdentificador()));
+        if(comandoAtribuicao.obterExpressao() instanceof NoExpressaoAritmetica) {
+            NoIdentificador noId = traduzirExpressaoAritmetica((NoExpressaoAritmetica) comandoAtribuicao.obterExpressao());
+            instrucoes.add(new InstrucaoAtribuir(noId, comandoAtribuicao.obterIdentificador()));
+        } else {
+            instrucoes.add(new InstrucaoAtribuir(comandoAtribuicao.obterExpressao(), comandoAtribuicao.obterIdentificador()));
+        }
     }
 }
