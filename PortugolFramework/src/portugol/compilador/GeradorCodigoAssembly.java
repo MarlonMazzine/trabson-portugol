@@ -160,8 +160,6 @@ public class GeradorCodigoAssembly {
         imprimir("jmp r"+instrucaoIrPara.obterRotulo().obterNumeroRotulo());
     }
 
-    //Métodos a serem completados ----------------------------------------------  
-
     private void gerarInstrucaoAritmetica(InstrucaoAritmetica instrucaoAritmetica){
         String operacao;
         switch (instrucaoAritmetica.obterTipoOperacaoOritmetica()){
@@ -180,9 +178,10 @@ public class GeradorCodigoAssembly {
             default:
                 operacao = "?";
         }
-
-        //Completar atui.
-        //Usar imprimir para gerar o código Assembly.
+        
+        imprimir("MOV "+obterValorExpressao(instrucaoAritmetica.obterOperandoRetorno())+" := "+
+                obterValorExpressao(instrucaoAritmetica.obterOperandoEsquerdo())+operacao+
+                obterValorExpressao(instrucaoAritmetica.obterOperandoDireito()));
         
     }
 
@@ -218,23 +217,21 @@ public class GeradorCodigoAssembly {
         rotulo1 = gerarRotuloInterno();
         rotulo2 = gerarRotuloInterno();
         
-        
-        //Completar atui.
-        //Usar imprimir para gerar o código Assembly.
+        imprimir(obterValorExpressao(instrucaoRelacional.obterOperandoRetorno())+" := "+
+                obterValorExpressao(instrucaoRelacional.obterOperandoEsquerdo())+operacao+
+                obterValorExpressao(instrucaoRelacional.obterOperandoDireito()));
 
     }
 
    
     private void escreverInstrucaoMover(InstrucaoAtribuir instrucaoMover){
-        //Completar atui.
-        //Usar imprimir para gerar o código Assembly.
-        //USar obterValorExpressao para obter o que dev ser movido
+        imprimir(obterValorExpressao(instrucaoMover.obterDestino())+" := "+
+                obterValorExpressao(instrucaoMover.obterOrigem()));
     }
 
     private void escreverInstrucaoSeFalso(InstrucaoSeFalso instrucaoSeFalso){
-        //Completar atui.
-        //Usar imprimir para gerar o código Assembly.
-        //USar obterValorExpressao para obter o que dev ser movido
+        imprimir("se_falso "+obterValorExpressao(instrucaoSeFalso.obterExpressao())+
+                " ir_para R"+instrucaoSeFalso.obterRotulo().obterNumeroRotulo());
     }
 
 
